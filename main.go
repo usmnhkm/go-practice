@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"os"
 	"practice/controllers"
 	"practice/database"
 
@@ -22,7 +23,13 @@ func main() {
 	} else {
 		fmt.Println("success load env")
 	}
-	psqlInfo := fmt.Sprintf("host=#{host} port=#{port} user=#{user} dbname=#{dbname} sslmode=disable")
+	psqlInfo := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
+		os.Getenv("PGHOST"),
+		os.Getenv("PGPORT"),
+		os.Getenv("PGUSER"),
+		os.Getenv("PGPASSWORD"),
+		os.Getenv("PGDATABASE"),
+	)
 
 	DB, err = sql.Open("postgres", psqlInfo)
 	err = DB.Ping()
@@ -42,5 +49,5 @@ func main() {
 	router.PUT("/persons/:id", controllers.UpdatePerson)
 	router.DELETE("/persons/:id", controllers.DeletePerson)
 
-	router.Run("localhost:8080")
+	router.Run(":" + os.Getenv("PORT"))
 }
