@@ -1,10 +1,10 @@
 package controllers
 
 import (
+	"latihan/database"
+	"latihan/repository"
+	"latihan/structs"
 	"net/http"
-	"practice/database"
-	"practice/repository"
-	"practice/structs"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -22,7 +22,7 @@ func GetAllPerson(c *gin.Context) {
 		}
 	} else {
 		result = gin.H{
-			"result": persons,
+			"results": persons,
 		}
 	}
 	c.JSON(http.StatusOK, result)
@@ -35,6 +35,7 @@ func InsertPerson(c *gin.Context) {
 	if err != nil {
 		panic(err)
 	}
+
 	err = repository.InsertPerson(database.DbConnection, person)
 	if err != nil {
 		panic(err)
@@ -46,6 +47,7 @@ func InsertPerson(c *gin.Context) {
 
 func UpdatePerson(c *gin.Context) {
 	var person structs.Person
+
 	id, _ := strconv.Atoi(c.Param("id"))
 
 	err := c.ShouldBindJSON(&person)
@@ -55,6 +57,7 @@ func UpdatePerson(c *gin.Context) {
 	person.ID = int64(id)
 
 	err = repository.UpdatePerson(database.DbConnection, person)
+
 	if err != nil {
 		panic(err)
 	}
@@ -66,7 +69,6 @@ func UpdatePerson(c *gin.Context) {
 
 func DeletePerson(c *gin.Context) {
 	var person structs.Person
-
 	id, err := strconv.Atoi(c.Param("id"))
 
 	person.ID = int64(id)
@@ -75,6 +77,7 @@ func DeletePerson(c *gin.Context) {
 	if err != nil {
 		panic(err)
 	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"result": "success delete person",
 	})
