@@ -5,9 +5,9 @@ import (
 	"latihan/repository"
 	"latihan/structs"
 	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 func GetAllPerson(c *gin.Context) {
@@ -35,7 +35,7 @@ func InsertPerson(c *gin.Context) {
 	if err != nil {
 		panic(err)
 	}
-
+	person.ID = uuid.New().String()
 	err = repository.InsertPerson(database.DbConnection, person)
 	if err != nil {
 		panic(err)
@@ -48,13 +48,11 @@ func InsertPerson(c *gin.Context) {
 func UpdatePerson(c *gin.Context) {
 	var person structs.Person
 
-	id, _ := strconv.Atoi(c.Param("id"))
-
 	err := c.ShouldBindJSON(&person)
 	if err != nil {
 		panic(err)
 	}
-	person.ID = int64(id)
+	person.ID = c.Param("id")
 
 	err = repository.UpdatePerson(database.DbConnection, person)
 
@@ -69,11 +67,10 @@ func UpdatePerson(c *gin.Context) {
 
 func DeletePerson(c *gin.Context) {
 	var person structs.Person
-	id, err := strconv.Atoi(c.Param("id"))
 
-	person.ID = int64(id)
+	person.ID = c.Param("id")
 
-	err = repository.DeletePerson(database.DbConnection, person)
+	err := repository.DeletePerson(database.DbConnection, person)
 	if err != nil {
 		panic(err)
 	}
